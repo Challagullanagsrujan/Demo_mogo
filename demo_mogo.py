@@ -1,19 +1,22 @@
 from pymongo import MongoClient
-from datetime import datetime
+import datetime
 
-client = MongoClient("mongodb://127.0.0.1:27017")
-db = client["secure_db"]
-users = db["users"]
+# Connect to local MongoDB
+client = MongoClient('mongodb://localhost:27017/')
+db = client['encrypted_test_db']
+collection = db['test_collection']
 
-# WRITE
-result = users.insert_one({
-    "name": "Nagsrujan",
-    "email": "nags@example.com",
-    "created_at": datetime.utcnow()
-})
-print("Inserted ID:", result.inserted_id)
+# Insert a test record
+test_record = {
+    "author": "CloudServer",
+    "text": "This data is stored on LUKS!",
+    "date": datetime.datetime.now()
+}
 
-# READ
-user = users.find_one({"email": "nags@example.com"}, {"_id": 0})
-print("User:", user)
+print("Inserting data...")
+rec_id = collection.insert_one(test_record).inserted_id
+print(f"Data inserted with ID: {rec_id}")
 
+# Find and print it back
+print("Reading data back...")
+print(collection.find_one({"_id": rec_id}))
